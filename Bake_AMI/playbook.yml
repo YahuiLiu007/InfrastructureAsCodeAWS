@@ -1,0 +1,22 @@
+---
+# playbook.yml
+- name: 'Provision Image'
+  hosts: default
+  become: true
+
+  tasks:
+    - name: install unzip
+      package:
+        name: 'unzip'
+        state: present
+    - name: install python3-pip
+      apt:
+        name: 'python3-pip'
+        state: present
+        update_cache: yes
+      become: true
+      become_method: sudo
+    - name: install flask
+      pip:
+        name: 'flask'
+        state: present

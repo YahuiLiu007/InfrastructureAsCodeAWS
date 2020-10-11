@@ -1,0 +1,56 @@
+{
+    "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": "",
+        "region": "",
+        "ssh_username": "ubuntu",
+        "ami_name": "packer-neu-lyh-iadt-2020-final-{{timestamp}}",
+	"Name": "",
+	"type": "",
+	"source_ami": "",
+	"block_device_name": "",
+	"volume_size": "",
+	"volume_type": ""
+	
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "region": "{{ user `region` }}",
+            "source_ami": "{{user `source_ami`}}",
+            "launch_block_device_mappings": [
+                {
+                    "device_name": "{{ user `block_device_name` }}",
+                    "volume_size": "{{ user `volume_size` }}",
+                    "volume_type": "{{ user `volume_type` }}",
+                    "delete_on_termination": true
+                }
+            ],
+            "instance_type": "{{user `instance_type`}}",
+            "ssh_username": "{{user `ssh_username`}}",
+            "ami_name": "{{user `ami_name`}}",
+            "tags": {
+                "OS_Version": "Ubuntu",
+                "Release": "Latest",
+                "contains": "ansible, python3, unzip",
+		"Name":"{{user `Name`}}"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "./playbook.yml"
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "shell-local",
+            "inline": [
+                "echo 'success in building an AMI! at' $(date '+%Y%m%d-%H%M%S')"
+            ]
+        }
+    ]
+}
